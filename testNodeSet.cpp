@@ -7,7 +7,7 @@
 #include <cassert>
 #include <iostream>
 
-void test()
+void test_city_dijkstra()
 {
     NodeSet ns{};
 
@@ -51,7 +51,7 @@ void test()
 
 int main()
 {
-    test();
+    test_city_dijkstra();
     std::cout << "test_nodeset passed" << std::endl;
     return 0;
 }

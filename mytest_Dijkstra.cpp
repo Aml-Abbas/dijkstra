@@ -1,3 +1,4 @@
+/*
 //
 // Created by Dell on 2021-01-15.
 //
@@ -11,54 +12,69 @@
 using std::cout;
 using std::endl;
 
+*/
+/** functions to use when counting the way according to the city.
+ * b) antal passerade orter *//*
 
-void test()
+int city_dijkstra(Edge *edge) {
+    return edge->getDestination()->getValue() * 0 + 1;
+}
+
+*/
+
+//
+// Created by Dell on 2021-01-14.
+//
+
+#include <iostream>
+#include <cassert>
+#include "Node.h"
+// #include "graph.h"
+#include "dijkstra.h"
+#include "NodeSet.h"
+
+using std::cout;
+using std::endl;
+
+/** functions to use when counting the way accordig to the distance.
+ * a) vägavstånd enligt uppgiften */
+
+int distance_dijkstra(Edge *edge) {
+    return edge->getLength();
+}
+
+int city_dijkstra(Edge *edge) {
+    return edge->getDestination()->getValue() * 0 + 1;
+}
+
+void test_city_dijkstra()
 {
     dijkstra dis{};
     Node lund{"Lund"};
-    Node malmo{"malmo"};
-    Node lanskrona{"lanskrona"};
-    Node helsingborg{"helsingborg"};
-    Node goteborg{"goteborg"};
-    Node stockholm{"stockholm"};
-
     Node dalby{"Dalby"};
     Node sandby{"Sodra Sandby"};
     Node hallestad{"Torna Hallestad"};
     Node flyinge{"Flyinge"};
     Node veberod{"Veberod"};
 
-    lund.addEdge(&dalby,1);
-    lund.addEdge(&sandby,19);
-    lund.addEdge(&hallestad,3);
-    lund.addEdge(&flyinge,5);
-    lund.addEdge(&stockholm,2);
-    lund.addEdge(&veberod,10);
-
-    lund.addEdge(&malmo,4);
-    lund.addEdge(&helsingborg,9);
-
-    malmo.addEdge(&helsingborg,1);
-    helsingborg.addEdge(&lanskrona,9);
-
-    malmo.addEdge(&goteborg,4);
-    goteborg.addEdge(&stockholm,10);
-
-
-    dalby.addEdge(&sandby,5);
-    dalby.addEdge(&veberod,7);
-    dalby.addEdge(&hallestad,9);
-    sandby.addEdge(&lund,7);
+    lund.addEdge(&dalby,12);
+    lund.addEdge(&sandby,12);
+    dalby.addEdge(&sandby,12);
+    dalby.addEdge(&veberod,11);
+    dalby.addEdge(&hallestad,5);
+    sandby.addEdge(&lund,12);
     sandby.addEdge(&flyinge,4);
     hallestad.addEdge(&veberod,8);
-    dis.begin_dijkstra(&lund);
 
-    std::string to_return{};
-    Node noNode{"lund"};
-    Edge edge{&noNode, 0};
-    to_return= dis.get_the_way("lund","stockholm", distance_dijkstra(&edge));
+    dis.begin_dijkstra(&lund, city_dijkstra);
 
-    assert(to_return=="");
+
+    assert(lund.getValue() == 0);
+    assert(dalby.getValue() == 1);
+    assert(sandby.getValue() == 1);
+    assert(hallestad.getValue() == 2);
+    assert(veberod.getValue() == 2);
+    assert(flyinge.getValue() == 2);
 
 
 #ifdef INFO
@@ -69,12 +85,86 @@ void test()
         cout << endl;
     }
 #endif
-    cout << "test_dijkstra passed" << endl;
+    cout << "test_city_dijkstra passed" << endl;
 }
 
+void test_distance_dijkstra()
+{
+    dijkstra dis{};
+    Node lund{"Lund"};
+    Node dalby{"Dalby"};
+    Node sandby{"Sodra Sandby"};
+    Node hallestad{"Torna Hallestad"};
+    Node flyinge{"Flyinge"};
+    Node veberod{"Veberod"};
+
+    lund.addEdge(&dalby,12);
+    lund.addEdge(&sandby,12);
+    dalby.addEdge(&sandby,12);
+    dalby.addEdge(&veberod,11);
+    dalby.addEdge(&hallestad,5);
+    sandby.addEdge(&lund,12);
+    sandby.addEdge(&flyinge,4);
+    hallestad.addEdge(&veberod,8);
+
+    dis.begin_dijkstra(&lund, distance_dijkstra);
+
+
+    assert(lund.getValue() == 0);
+    assert(dalby.getValue() == 12);
+    assert(sandby.getValue() == 12);
+    assert(hallestad.getValue() == 17);
+    assert(veberod.getValue() == 23);
+    assert(flyinge.getValue() == 16);
+
+#ifdef INFO
+    cout << "----\nAll distances from Lund:\n";
+
+    for(auto& t : {lund, dalby, sandby, hallestad, veberod, flyinge}) {
+        cout << t.getName() << " : " << t.getValue() << " ";
+        cout << endl;
+    }
+#endif
+    cout << "test_distance_dijkstra passed" << endl;
+}
+
+void test_get_the_way() {
+    dijkstra dis{};
+    Node lund{"Lund"};
+    Node dalby{"Dalby"};
+    Node sandby{"Sodra Sandby"};
+    Node hallestad{"Torna Hallestad"};
+    Node flyinge{"Flyinge"};
+    Node veberod{"Veberod"};
+
+    lund.addEdge(&dalby,12);
+    lund.addEdge(&sandby,12);
+    dalby.addEdge(&sandby,12);
+    dalby.addEdge(&veberod,11);
+    dalby.addEdge(&hallestad,5);
+    sandby.addEdge(&lund,12);
+    sandby.addEdge(&flyinge,4);
+    hallestad.addEdge(&veberod,8);
+
+    std::string way = dis.get_the_way(&lund, &hallestad, distance_dijkstra);
+//    cout << "way: " << way << "\n";
+    assert(way == "Lund Dalby Torna Hallestad 17");
+
+#ifdef INFO
+    cout << "----\nAll distances from Lund:\n";
+
+    for(auto& t : {lund, dalby, sandby, hallestad, veberod, flyinge}) {
+        cout << t.getName() << " : " << t.getValue() << " ";
+        cout << endl;
+    }
+#endif
+    cout << "test_get_the_way passed" << endl;
+}
 
 int main()
 {
-    test();
+    test_city_dijkstra();
+    test_distance_dijkstra();
+    test_get_the_way();
     return 0;
 }

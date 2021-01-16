@@ -42,8 +42,8 @@ public:
 private:
     std::string name;
     int value;
-    std::vector<Edge> edges;
     Node *parent;
+    std::vector<Edge> edges;
 };
 
 

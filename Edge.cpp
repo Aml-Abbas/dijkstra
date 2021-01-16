@@ -4,9 +4,10 @@
 
 #include "Edge.h"
 
-Edge::Edge(Node *destination, int length): node{destination}, length{length} {}
+Edge::Edge(Node *destination, int length) :
+node{destination}, length{length} {}
 
-Node* Edge::getDestination()const {
+Node *Edge::getDestination() const {
     return node;
 }
 

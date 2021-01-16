@@ -13,7 +13,7 @@ using std::cout;
 using std::endl;
 
 
-void test()
+void test_dijkstra()
 {
     dijkstra dis{};
     Node lund{"Lund"};
@@ -57,6 +57,6 @@ void test()
 
 int main()
 {
-    test();
+    test_dijkstra();
     return 0;
 }

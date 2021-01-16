@@ -14,14 +14,14 @@ void dijkstra::begin_dijkstra(Node *start) {
 
     NodeSet nodeSet{};
     nodeSet.add(start);
-    while (!nodeSet.isEmpty()){
-        Node* node= nodeSet.removeMin();
-        std::vector<Edge> edges= node->getEdges();
-        for(auto edge:edges){
-            auto length= edge.getLength();
-            auto destanition_node= edge.getDestination();
-            auto new_value= node->getValue()+length;
-            if (new_value< destanition_node->getValue()){
+    while (!nodeSet.isEmpty()) {
+        Node *node = nodeSet.removeMin();
+        std::vector<Edge> edges = node->getEdges();
+        for (auto edge:edges) {
+            auto length = edge.getLength();
+            auto destanition_node = edge.getDestination();
+            auto new_value = node->getValue() + length;
+            if (new_value < destanition_node->getValue()) {
                 destanition_node->setValue(new_value);
                 destanition_node->setParent(node);
                 nodeSet.add(destanition_node);
@@ -29,69 +29,62 @@ void dijkstra::begin_dijkstra(Node *start) {
         }
     }
 }
+
+
 /** skriva ut noderna. */
-std::string dijkstra::get_shortest_way(Node *destination) {
+std::string dijkstra::get_shortest_path(Node *destination) {
+    if (destination->getParent() == nullptr) {
+        return "did not find a path. ";
+    }
 
-    std::vector<Node* > way;
-    way.push_back(destination);
-    Node* node= destination;
-    if (destination->getParent()== nullptr){
-        return "didnt find a way. ";
-    }
-    while (node->getParent()!= nullptr){
-        way.push_back(node->getParent());
-        node= node->getParent();
+    std::vector<Node *> path;
+    Node *node = destination;
+    path.push_back(destination);
 
+    while (node->getParent() != nullptr) {
+        path.push_back(node->getParent());
+        node = node->getParent();
     }
-    std::stringstream string_to_return {};
-    for (size_t i= way.size()-1; i>=0;i++){
-        string_to_return<<way[i]->getName()<<" ";
+    std::string pathstr;
+    std::reverse(path.begin(), path.end());
+    for (auto &node : path) {
+        pathstr += (node->getName());
+        pathstr += " ";
     }
-    string_to_return<<destination->getValue();
-    return string_to_return.str();
+    pathstr += std::to_string(destination->getValue());
+    return pathstr;
 }
 
-void dijkstra::begin_dijkstra(Node * start, int (*f)(Edge *)) {
+void dijkstra::begin_dijkstra(Node *start, int (*f)(Edge *)) {
     start->setValue(0);
     start->setParent(nullptr);
-
     NodeSet nodeSet{};
     nodeSet.add(start);
-    while (!nodeSet.isEmpty()){
-        Node* node= nodeSet.removeMin();
-        std::vector<Edge> edges= node->getEdges();
-        for(auto edge:edges){
-            auto destanition_node= edge.getDestination();
-            auto new_value= node->getValue()+f(&edge);
 
-            if (new_value< destanition_node->getValue()){
-                destanition_node->setValue(new_value);
-                destanition_node->setParent(node);
-                nodeSet.add(destanition_node);
+    while (!nodeSet.isEmpty()) {
+        Node *node = nodeSet.removeMin();
+        std::vector<Edge> edges = node->getEdges();
+        for (auto edge : edges) {
+            Node *destination_node = edge.getDestination();
+            int new_value = node->getValue() + f(&edge);
+
+            if (new_value < destination_node->getValue()) {
+                destination_node->setValue(new_value);
+                destination_node->setParent(node);
+                nodeSet.add(destination_node);
             }
         }
     }
 }
 
-std::string dijkstra::get_the_way(std::string start, std::string destination, int (*f)(Edge *)) {
-    Node new_start{start};
-    Node new_destination{destination};
-        begin_dijkstra(&new_start, f);
-        return get_shortest_way(&new_destination);
+std::string dijkstra::get_the_way(Node *start, Node *destination,
+                                  int (*f)(Edge *)) {
+    begin_dijkstra(start, f);
+    return get_shortest_path(destination);
 
 }
 
 
 /** functions to use when counting the way. */
 
-/** functions to use when counting the way accordig to the city.
- * b) antal passerade orter */
-int city_dijkstra(Edge* edge){
-    return edge->getDestination()->getValue() * 0+1;
-}
-/** functions to use when counting the way accordig to the distance.
- * a) vägavstånd enligt uppgiften */
-int distance_dijkstra(Edge* edge){
-    return edge->getLength();
-}
 
